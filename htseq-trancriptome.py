@@ -25,6 +25,31 @@ def assess_bundle(bundle, features):
             counts[ "_ambiguous" ] += 1
     return counts
 
+def ungapped_se_counter_demo(sam_reader, feature_array):
+    """
+    classic alignment counter for ungapped single end reads
+    """
+    counts = collections.Counter( )
+    for almnt in itertools.islice( sam_reader, 100):
+        if not almnt.aligned:
+            count[ "_unmapped" ] += 1
+            continue
+        gene_ids = set()
+        for iv, val in feature_array[ almnt.iv ].steps():
+            gene_ids |= val
+        if len(gene_ids) == 1:
+            gene_id = list(gene_ids)[0]
+            counts[ gene_id ] += 1
+        elif len(gene_ids) == 0:
+            counts[ "_no_feature" ] += 1
+        else:
+            counts[ "_ambiguous" ] += 1
+
+    return counts
+
+def ungapped_pe_counter_demo(sam_reader, feature_array):
+    pass
+
 # define some test files:
 samfile = '/home/antqueen/booster/PRO_Odontomachus/trinity_denovo_normalized_camponotus/Star/Cplan_Q2_16Aligned.out.sam'
 gtffile = '/home/antqueen/genomics/experiments/analyses/PRO20160405_camponotus/trinity_denovo_normalized_camponotus/Transdecoder_ss/merge_genesets/Cpla_td_gff.Apr21_11.15.families.gtf'
@@ -41,25 +66,13 @@ for feature in gtf:
 # create Reader class for samfile:
 sam_file = hts.SAM_Reader(samfile)
 
-# classic alignment counter for ungapped single end reads:
-counts = collections.Counter( )
-for almnt in itertools.islice( sam_file, 100):
-    if not almnt.aligned:
-        count[ "_unmapped" ] += 1
-        continue
-    gene_ids = set()
-    for iv, val in exons[ almnt.iv ].steps():
-        gene_ids |= val
-    if len(gene_ids) == 1:
-        gene_id = list(gene_ids)[0]
-        counts[ gene_id ] += 1
-    elif len(gene_ids) == 0:
-        counts[ "_no_feature" ] += 1
-    else:
-        counts[ "_ambiguous" ] += 1
+# get counts assuming ungapped se reads :
+counts = ungapped_se_counter_demo(sam_file, exons)
 
 for g, c in counts.items():
     print "%-10s %d" % (g, c)
+
+
 
 
 read_pair_bundles = hts.pair_SAM_alignments( sam_file , bundle=True)
