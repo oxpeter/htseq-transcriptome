@@ -77,6 +77,9 @@ def ungapped_pe_counter(sam_reader, feature_array):
             print "\r%d read bundles counted in %s\r" % (ic, t1-t0)
             sys.stdout.flush()
 
+        if bundle == []: # first bundle for some reason is always an empty list
+            continue
+
         bcounts = assess_bundle(bundle, feature_array)
 
         """
@@ -176,7 +179,7 @@ parser.add_argument("-y", "--read_type", choices=['single_end', 'paired_end'], t
                     """)
 args = parser.parse_args()
 
-print args
+
 
 # define some test files:
 samfile = '/home/antqueen/booster/PRO_Odontomachus/trinity_denovo_normalized_camponotus/Star/Cplan_Q2_16Aligned.out.sam'
