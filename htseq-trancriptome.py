@@ -48,7 +48,7 @@ def ungapped_se_counter(sam_reader, feature_array):
     counts = collections.Counter( )
     for almnt in sam_reader:
         if not almnt.aligned:
-            count[ "_unmapped" ] += 1
+            counts[ "_unmapped" ] += 1
             continue
         gene_ids = set()
         for iv, val in feature_array[ almnt.iv ].steps():
